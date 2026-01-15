@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_set>
+#include <utility>
 #include <mitsuba/core/bbox.h>
 #include <mitsuba/core/fwd.h>
 #include <mitsuba/core/logger.h>
