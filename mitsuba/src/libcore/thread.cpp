@@ -102,7 +102,7 @@ struct Thread::ThreadPrivate {
 };
 
 Thread::Thread(const std::string &name)
- : d(new ThreadPrivate(name)) { }
+ : d(std::unique_ptr<ThreadPrivate>(new ThreadPrivate(name))) { }
 
 Thread::~Thread() {
     if (d->running)
@@ -361,7 +361,8 @@ void Thread::start() {
     d->running = true;
 
     inc_ref();
-    d->thread = std::thread(&Thread::dispatch, this);
+    // Use lambda to avoid MSVC 2022 template deduction issues
+    d->thread = std::thread([this]() { this->dispatch(); });
 }
 
 void Thread::dispatch() {
@@ -532,8 +533,7 @@ void Thread::static_initialization() {
     main_thread->d->fresolver = new FileResolver();
     *self = main_thread;
 
-    observer = std::unique_ptr<Thread::TaskObserver>(
-        new Thread::TaskObserver());
+    observer.reset(new Thread::TaskObserver());
 }
 
 void Thread::static_shutdown() {
