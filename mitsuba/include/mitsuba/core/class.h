@@ -248,11 +248,11 @@ constexpr bool is_constructible_v = is_constructiblee<T, Arg>::value;
 
 template <typename T, std::enable_if_t<is_constructible_v<T, const Properties&>, int> = 0>
 Class::ConstructFunctor get_construct_functor() { return [](const Properties& p) -> Object* { return new T(p); }; }
-template <typename T, std::enable_if_t<!is_constructible_v<T, const Properties&>, int> = 0>
+template <typename T, std::enable_if_t<!is_constructible_v<T, const Properties&>, long> = 0>
 Class::ConstructFunctor get_construct_functor() { return {}; }
 template <typename T, std::enable_if_t<is_constructible_v<T, Stream*>, int> = 0>
 Class::UnserializeFunctor get_unserialize_functor() { return [](Stream* s) -> Object* { return new T(s); }; }
-template <typename T, std::enable_if_t<!is_constructible_v<T, Stream*>, int> = 0>
+template <typename T, std::enable_if_t<!is_constructible_v<T, Stream*>, long> = 0>
 Class::UnserializeFunctor get_unserialize_functor() { return {}; }
 NAMESPACE_END(detail)
 NAMESPACE_END(mitsuba)

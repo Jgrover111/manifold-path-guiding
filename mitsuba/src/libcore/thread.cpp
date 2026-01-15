@@ -102,7 +102,7 @@ struct Thread::ThreadPrivate {
 };
 
 Thread::Thread(const std::string &name)
- : d(std::unique_ptr<ThreadPrivate>(new ThreadPrivate(name))) { }
+ : d(std::make_unique<ThreadPrivate>(name)) { }
 
 Thread::~Thread() {
     if (d->running)
