@@ -9,6 +9,7 @@
 #include <thread>
 #include <sstream>
 #include <chrono>
+#include <memory>
 #include <utility>
 
 // Required for native thread functions

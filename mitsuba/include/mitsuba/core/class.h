@@ -251,7 +251,7 @@ Class::ConstructFunctor get_construct_functor() {
     if constexpr (is_constructible_v<T, const Properties&>) {
         return [](const Properties& p) -> Object* { return new T(p); };
     } else {
-        return nullptr;
+        return Class::ConstructFunctor();
     }
 }
 
@@ -260,7 +260,7 @@ Class::UnserializeFunctor get_unserialize_functor() {
     if constexpr (is_constructible_v<T, Stream*>) {
         return [](Stream* s) -> Object* { return new T(s); };
     } else {
-        return nullptr;
+        return Class::UnserializeFunctor();
     }
 }
 NAMESPACE_END(detail)

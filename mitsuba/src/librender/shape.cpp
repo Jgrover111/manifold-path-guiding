@@ -5,6 +5,8 @@
 #include <mitsuba/render/sensor.h>
 #include <mitsuba/render/medium.h>
 #include <mitsuba/core/plugin.h>
+#include <memory>
+#include <functional>
 
 #if defined(MTS_ENABLE_EMBREE)
     #include <embree3/rtcore.h>
