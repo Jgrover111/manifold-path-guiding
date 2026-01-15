@@ -9,6 +9,7 @@
 #include <thread>
 #include <sstream>
 #include <chrono>
+#include <utility>
 
 // Required for native thread functions
 #if defined(__LINUX__)

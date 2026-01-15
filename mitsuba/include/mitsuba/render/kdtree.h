@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 #include <utility>
+#include <memory>
 #include <mitsuba/core/bbox.h>
 #include <mitsuba/core/fwd.h>
 #include <mitsuba/core/logger.h>
