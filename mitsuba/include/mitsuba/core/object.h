@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <vector>
 #include <utility>
+#include <type_traits>
 #include <mitsuba/core/class.h>
 
 NAMESPACE_BEGIN(mitsuba)

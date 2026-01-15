@@ -3,6 +3,8 @@
 #include <mitsuba/mitsuba.h>
 #include <string>
 #include <functional>
+#include <type_traits>
+#include <utility>
 
 NAMESPACE_BEGIN(mitsuba)
 
@@ -251,7 +253,7 @@ Class::ConstructFunctor get_construct_functor() {
     if constexpr (is_constructible_v<T, const Properties&>) {
         return [](const Properties& p) -> Object* { return new T(p); };
     } else {
-        return Class::ConstructFunctor();
+        return std::function<Object *(const Properties &)>{};
     }
 }
 
@@ -260,7 +262,7 @@ Class::UnserializeFunctor get_unserialize_functor() {
     if constexpr (is_constructible_v<T, Stream*>) {
         return [](Stream* s) -> Object* { return new T(s); };
     } else {
-        return Class::UnserializeFunctor();
+        return std::function<Object *(Stream *)>{};
     }
 }
 NAMESPACE_END(detail)
