@@ -15,6 +15,24 @@ Mitsuba 2 integrates with Blender through the **mitsuba-blender** addon, which a
 - Blender 2.93 or higher (recommended: Blender 3.3 LTS or 3.6 LTS)
 - Python 3.x (usually bundled with Blender)
 
+### ⚠️ CRITICAL: Python Version Compatibility
+
+**Your Mitsuba build MUST use the same Python version as your Blender installation!**
+
+| Blender Version | Required Python | Action |
+|-----------------|-----------------|--------|
+| Blender 4.4 | Python 3.11.11 | Rebuild Mitsuba with Python 3.11 |
+| Blender 4.3 | Python 3.11.9 | Rebuild Mitsuba with Python 3.11 |
+| Blender 4.2 LTS | Python 3.11.7 | Rebuild Mitsuba with Python 3.11 |
+| Blender 4.0-4.1 | Python 3.10.13 | Your current build should work |
+| Blender 3.6 LTS | Python 3.10.13 | Your current build should work ✅ |
+| Blender 3.3-3.5 | Python 3.10.x | Your current build should work ✅ |
+
+**If you built Mitsuba with Python 3.10 but want to use Blender 4.4:**
+👉 **See `PYTHON_VERSION_FIX.md` for complete rebuild instructions**
+
+**Quick alternative:** Use **Blender 3.6 LTS** which matches your Python 3.10 build.
+
 ## Step 1: Locate Your Mitsuba Build Directory
 
 After building with Visual Studio 2022, your Mitsuba executable and libraries are in:
@@ -174,6 +192,23 @@ For more control, especially to use the Manifold Path Guiding integrator:
    ```
 
 ## Troubleshooting
+
+### ⚠️ Python Version Mismatch (MOST COMMON)
+
+**Error:**
+```
+The 'mitsuba' native modules could not be imported. You're likely trying to use
+Mitsuba within a Python binary that is different from the one for which the
+native module was compiled.
+```
+
+**Cause:** Your Mitsuba was built with a different Python version than Blender uses.
+
+**Solution:** See **`PYTHON_VERSION_FIX.md`** for complete instructions.
+
+**Quick fix:**
+- If using Blender 4.4: Rebuild Mitsuba with Python 3.11
+- Or use Blender 3.6 LTS (Python 3.10) instead
 
 ### "Failed to load Mitsuba package" Error
 

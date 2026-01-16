@@ -69,10 +69,24 @@ Check the `scenes/` folder for ready-to-render examples with MPG configured.
 
 | Problem | Solution |
 |---------|----------|
+| **Python version mismatch error** | **See `PYTHON_VERSION_FIX.md` - rebuild with Python 3.11** |
 | "Failed to load Mitsuba" | Verify the dist folder path contains `mitsuba.exe` |
 | Mitsuba not in dropdown | Restart Blender after enabling addon |
 | Blender hangs | Skip "Install dependencies" - use custom path instead |
 | MPG not in UI | Export to XML and edit integrator manually |
+
+### ⚠️ Important: Python Version Compatibility
+
+**Blender 4.4 uses Python 3.11.11**, but your Mitsuba may be built with Python 3.10.
+
+If you see an error about Python version mismatch when enabling the plugin, you **must rebuild Mitsuba** with the correct Python version.
+
+**Quick fix:**
+1. Install Python 3.11 from https://www.python.org/downloads/
+2. Rebuild Mitsuba with: `-DPython3_EXECUTABLE=C:\Python311\python.exe`
+3. See **`PYTHON_VERSION_FIX.md`** for complete instructions
+
+**Or** use Blender 3.6 LTS (Python 3.10) instead of Blender 4.4.
 
 ## Your Build Location
 
