@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cstring>
-#include <enoki/morton.h>
-#include <enoki/stl.h>
 #include <fstream>
 #include <iomanip>
 #include <mitsuba/core/profiler.h>
