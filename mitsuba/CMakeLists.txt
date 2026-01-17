@@ -16,6 +16,20 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/pybind11/tools")
 set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5)
+
+# Force Python 3.10.13 paths if specified via CMake options
+if(DEFINED PYTHON_EXECUTABLE)
+  set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}" CACHE FILEPATH "Python executable" FORCE)
+endif()
+if(DEFINED PYTHON_LIBRARY)
+  set(PYTHON_LIBRARY "${PYTHON_LIBRARY}" CACHE FILEPATH "Python library" FORCE)
+  set(PYTHONLIBS_FOUND TRUE CACHE BOOL "Python libraries found" FORCE)
+endif()
+if(DEFINED PYTHON_INCLUDE_DIR)
+  set(PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}" CACHE PATH "Python include directory" FORCE)
+  set(PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIR}" CACHE PATH "Python include directories" FORCE)
+endif()
+
 find_package(PythonLibsNew REQUIRED)
 
 
