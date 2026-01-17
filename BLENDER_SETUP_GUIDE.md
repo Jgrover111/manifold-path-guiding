@@ -19,19 +19,19 @@ Mitsuba 2 integrates with Blender through the **mitsuba-blender** addon, which a
 
 **Your Mitsuba build MUST use the same Python version as your Blender installation!**
 
-| Blender Version | Required Python | Action |
-|-----------------|-----------------|--------|
-| Blender 4.4 | Python 3.11.11 | Rebuild Mitsuba with Python 3.11 |
-| Blender 4.3 | Python 3.11.9 | Rebuild Mitsuba with Python 3.11 |
-| Blender 4.2 LTS | Python 3.11.7 | Rebuild Mitsuba with Python 3.11 |
-| Blender 4.0-4.1 | Python 3.10.13 | Your current build should work |
-| Blender 3.6 LTS | Python 3.10.13 | Your current build should work ✅ |
-| Blender 3.3-3.5 | Python 3.10.x | Your current build should work ✅ |
+| Blender Version | Required Python | Your Current Build (Python 3.10) |
+|-----------------|-----------------|----------------------------------|
+| Blender 4.1-4.4 | Python 3.11.x | ❌ Rebuild needed with Python 3.11 |
+| **Blender 4.0** | **Python 3.10.13** | ✅ **Should work!** |
+| **Blender 3.6 LTS** | **Python 3.10.13** | ✅ **Should work! (Recommended)** |
+| Blender 3.3-3.5 | Python 3.10.x | ✅ Should work! |
 
-**If you built Mitsuba with Python 3.10 but want to use Blender 4.4:**
-👉 **See `PYTHON_VERSION_FIX.md` for complete rebuild instructions**
+**Important:** Python 3.11 upgrade happened between Blender 4.0 (last 3.10 version) and 4.1 (first 3.11 version).
 
-**Quick alternative:** Use **Blender 3.6 LTS** which matches your Python 3.10 build.
+**If you want to use Blender 4.1 or later:**
+👉 **See `PYTHON_VERSION_FIX.md` for complete rebuild instructions with Python 3.11**
+
+**Quick alternative:** Use **Blender 4.0** or **Blender 3.6 LTS** - both use Python 3.10 and will work immediately!
 
 ## Step 1: Locate Your Mitsuba Build Directory
 

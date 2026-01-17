@@ -77,16 +77,23 @@ Check the `scenes/` folder for ready-to-render examples with MPG configured.
 
 ### ⚠️ Important: Python Version Compatibility
 
-**Blender 4.4 uses Python 3.11.11**, but your Mitsuba may be built with Python 3.10.
+**Your Mitsuba is built with Python 3.10**, which is compatible with:
+- ✅ **Blender 4.0** (last version with Python 3.10)
+- ✅ **Blender 3.6 LTS** (Python 3.10 - Recommended!)
+- ✅ Blender 3.3-3.5 (Python 3.10)
 
-If you see an error about Python version mismatch when enabling the plugin, you **must rebuild Mitsuba** with the correct Python version.
+**NOT compatible with:**
+- ❌ Blender 4.1, 4.2, 4.3, 4.4 (all use Python 3.11)
 
-**Quick fix:**
+If you see a Python version mismatch error, you have two options:
+
+**Option 1 - Use Compatible Blender (Easiest):**
+- Download Blender 3.6 LTS or 4.0 from https://www.blender.org/download/
+
+**Option 2 - Rebuild for Blender 4.1+:**
 1. Install Python 3.11 from https://www.python.org/downloads/
 2. Rebuild Mitsuba with: `-DPython3_EXECUTABLE=C:\Python311\python.exe`
 3. See **`PYTHON_VERSION_FIX.md`** for complete instructions
-
-**Or** use Blender 3.6 LTS (Python 3.10) instead of Blender 4.4.
 
 ## Your Build Location
 

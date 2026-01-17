@@ -6,7 +6,7 @@ When enabling the Mitsuba-Blender plugin, you get this error:
 
 ```
 The 'mitsuba' native modules could not be imported. You're likely trying to use
-Mitsuba within a Python binary (C:\Program Files\Blender Foundation\Blender 4.4\4.4\python\bin\python.exe)
+Mitsuba within a Python binary (C:\Program Files\Blender Foundation\Blender X.X\...)
 that is different from the one for which the native module was compiled
 (C:\Users\josep\AppData\Local\Programs\Python\Python310\python.exe).
 ```
@@ -15,23 +15,50 @@ that is different from the one for which the native module was compiled
 
 **Version Mismatch:**
 - Your Mitsuba was built with **Python 3.10**
-- Blender 4.4 uses **Python 3.11.11**
+- Blender 4.1+ uses **Python 3.11**
 
 Python native modules (`.pyd` files on Windows) are **not binary-compatible** across different Python versions. You must rebuild Mitsuba with the exact Python version that Blender uses.
+
+## Critical Version Information
+
+**The Python upgrade happened between Blender 4.0 and 4.1:**
+
+- **Blender 4.0** (and earlier) → Python 3.10 ✅ **Compatible with your build**
+- **Blender 4.1+** (4.1, 4.2, 4.3, 4.4) → Python 3.11 ❌ **Requires rebuild**
 
 ## Solution Overview
 
 You have **3 options**:
 
-1. **Option A (Recommended):** Rebuild Mitsuba with Python 3.11 to match Blender 4.4
-2. **Option B:** Use an older Blender version that uses Python 3.10
-3. **Option C:** Use Blender's bundled Python directly (advanced)
+1. **Option A (Fastest):** Use Blender 4.0 or 3.6 LTS (Python 3.10) - **Works immediately!**
+2. **Option B (Best long-term):** Rebuild Mitsuba with Python 3.11 to use Blender 4.1+
+3. **Option C (Advanced):** Use Blender's bundled Python directly for building
 
 ---
 
-## Option A: Rebuild Mitsuba with Python 3.11 (Recommended)
+## Option A: Use Compatible Blender Version (Fastest - Recommended) ⭐
 
-This is the **best long-term solution** for Blender 4.4 compatibility.
+Download a Blender version that uses Python 3.10 - **it will work immediately** with your current build!
+
+### Recommended Downloads:
+
+**Best choice: Blender 3.6 LTS (Long Term Support)**
+- Download: https://www.blender.org/download/lts/3-6/
+- Python version: 3.10.13
+- ✅ Stable, well-supported, works perfectly with your build
+
+**Alternative: Blender 4.0**
+- Download: https://www.blender.org/download/releases/4-0/
+- Python version: 3.10.13
+- ✅ Last Blender 4.x version with Python 3.10
+
+After downloading and installing, follow the normal setup from `BLENDER_SETUP_GUIDE.md`. No rebuild required!
+
+---
+
+## Option B: Rebuild Mitsuba with Python 3.11
+
+This is the **best long-term solution** if you want to use Blender 4.1 or later.
 
 ### Step 1: Install Python 3.11
 
@@ -148,35 +175,21 @@ In Blender:
 
 ---
 
-## Option B: Use Compatible Blender Version
+## Blender-Python Version Reference
 
-If you can't rebuild or want a quicker solution, use a Blender version with Python 3.10.
+| Blender Version | Python Version | Compatible with Your Build? |
+|-----------------|----------------|----------------------------|
+| 4.4             | 3.11.11        | ❌ NO - Rebuild needed      |
+| 4.3             | 3.11.9         | ❌ NO - Rebuild needed      |
+| 4.2 LTS         | 3.11.7         | ❌ NO - Rebuild needed      |
+| 4.1             | 3.11.7         | ❌ NO - Rebuild needed      |
+| **4.0**         | **3.10.13**    | ✅ **YES - Should work**    |
+| **3.6 LTS**     | **3.10.13**    | ✅ **YES - Should work**    |
+| 3.5             | 3.10.9         | ✅ YES - Should work        |
+| 3.4             | 3.10.8         | ✅ YES - Should work        |
+| 3.3 LTS         | 3.10.2         | ✅ YES - Should work        |
 
-### Blender Versions with Python 3.10:
-
-- **Blender 3.3 LTS** - Python 3.10.2
-- **Blender 3.4** - Python 3.10.8
-- **Blender 3.5** - Python 3.10.9
-- **Blender 3.6 LTS** - Python 3.10.13
-
-**Recommendation:** Download **Blender 3.6 LTS** from:
-- https://www.blender.org/download/lts/3-6/
-
-Then follow the normal Blender setup from `BLENDER_SETUP_GUIDE.md`.
-
-### Blender-Python Version Reference
-
-| Blender Version | Python Version |
-|-----------------|----------------|
-| 4.4             | 3.11.11        |
-| 4.3             | 3.11.9         |
-| 4.2 LTS         | 3.11.7         |
-| 4.1             | 3.11.7         |
-| 4.0             | 3.10.13        |
-| 3.6 LTS         | 3.10.13        |
-| 3.5             | 3.10.9         |
-| 3.4             | 3.10.8         |
-| 3.3 LTS         | 3.10.2         |
+**Key Finding:** The Python upgrade happened between Blender 4.0 (Python 3.10) and 4.1 (Python 3.11).
 
 ---
 
@@ -265,18 +278,24 @@ cmake -G "Visual Studio 17 2022" -A x64 -T v142 ^
 
 ## Recommended Workflow
 
-For Blender 4.4 integration, the recommended setup is:
+**For immediate use (fastest):**
+
+1. ✅ Download Blender 3.6 LTS or 4.0 (Python 3.10)
+2. ✅ Install and set up the Mitsuba-Blender plugin
+3. ✅ Point to your existing Mitsuba build
+4. ✅ Start rendering immediately!
+
+**For Blender 4.1+ integration (best long-term):**
 
 1. ✅ Install Python 3.11.11 standalone
 2. ✅ Rebuild Mitsuba with `-DPython3_EXECUTABLE=C:\Python311\python.exe`
 3. ✅ Point Blender to the new build
 4. ✅ Test and verify
 
-This ensures:
-- Version compatibility
-- Independence from Blender updates
-- Ability to use Mitsuba standalone
-- Better debugging capabilities
+The rebuild approach ensures:
+- Compatibility with latest Blender versions
+- Access to newest Blender features
+- Future-proofing your setup
 
 ---
 
@@ -305,9 +324,15 @@ When you try to import a module compiled for Python 3.10 into Python 3.11, the m
 ## Summary
 
 The error occurs because of **Python version mismatch**:
-- Mitsuba: Built with Python 3.10
-- Blender 4.4: Uses Python 3.11.11
+- Your Mitsuba: Built with Python 3.10
+- Blender 4.1+: Uses Python 3.11
 
-**Fix:** Rebuild Mitsuba with Python 3.11 or use Blender 3.6 LTS (Python 3.10).
+**The Python upgrade happened between Blender 4.0 (Python 3.10) and 4.1 (Python 3.11).**
 
-**Recommended:** Install Python 3.11, rebuild with `-DPython3_EXECUTABLE=C:\Python311\python.exe`
+**Quick Fix (No rebuild needed):**
+- Download **Blender 3.6 LTS** or **Blender 4.0** (both use Python 3.10)
+- Works immediately with your current build!
+
+**Long-term Fix (For Blender 4.1+):**
+- Rebuild Mitsuba with Python 3.11
+- Use CMake option: `-DPython3_EXECUTABLE=C:\Python311\python.exe`
