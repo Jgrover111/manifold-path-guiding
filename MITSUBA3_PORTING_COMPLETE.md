@@ -23,7 +23,14 @@ The MPG (Manifold Path Guiding) integrator has been successfully ported from Mit
 - Analysis showed TBB headers were also **unused** - MPG uses OpenMP instead
 - Solution: Remove the 4 unused TBB include lines
 
+**Third Build Error (API Macros):**
+- After removing TBB includes, build failed with: `'MTS_IMPORT_TYPES': missing return type`
+- Mitsuba 3 renamed all `MTS_*` macros to `MI_*` macros
+- Solution: Replace all Mitsuba 2 API macros with Mitsuba 3 equivalents
+
 ### 2. Files Modified ✅
+
+**Phase 1: Remove Unused Includes**
 
 **mitsuba/src/integrators/MPG/ann.h**
 - Removed: `#include <enoki/morton.h>`
@@ -37,7 +44,27 @@ The MPG (Manifold Path Guiding) integrator has been successfully ported from Mit
 - Removed: `#include <tbb/blocked_range.h>`
 - Removed: `#include <tbb/parallel_for.h>`
 
-**Total changes: 8 lines removed** - That's it!
+**Phase 2: Update API Macros (Mitsuba 2 → 3)**
+
+**All MPG files** (26 macro replacements across 6 files):
+- `MTS_IMPORT_TYPES` → `MI_IMPORT_TYPES` (15 occurrences)
+- `MTS_IMPORT_RENDER_BASIC_TYPES` → `MI_IMPORT_RENDER_BASIC_TYPES` (2 occurrences)
+- `MTS_IMPORT_BASE` → `MI_IMPORT_BASE` (1 occurrence)
+- `MTS_INLINE` → `MI_INLINE` (7 occurrences)
+- `MTS_MASKED_FUNCTION` → `MI_MASKED_FUNCTION` (1 occurrence)
+- `MTS_DECLARE_CLASS` → `MI_DECLARE_CLASS` (1 occurrence)
+- `MTS_IMPLEMENT_CLASS_VARIANT` → `MI_IMPLEMENT_CLASS_VARIANT` (1 occurrence)
+- `MTS_EXPORT_PLUGIN` → `MI_EXPORT_PLUGIN` (1 occurrence)
+
+**Files updated:**
+- `chain_distribution.h` - 2 macro replacements
+- `dtree.h` - 4 macro replacements
+- `manifold_path_guiding.cpp` - 6 macro replacements
+- `manifold_path_guiding.h` - 9 macro replacements
+- `spatial_structure.h` - 4 macro replacements
+- `util.h` - 1 macro replacement
+
+**Total changes:** 8 includes removed + 26 macros updated = **34 changes**
 
 **Note:** The MPG integrator uses **OpenMP** for parallelism (`#pragma omp parallel for` in spatial_structure.h), not TBB.
 
@@ -85,14 +112,38 @@ Remove unused TBB includes from MPG integrator
 - Fixes "Cannot open include file: 'tbb/blocked_range.h'" build error
 ```
 
+**Commit 3:** `39a567d` - Update to Mitsuba 3 API conventions
+```
+Update MPG integrator to Mitsuba 3 API conventions
+
+Replace all Mitsuba 2 macros with Mitsuba 3 equivalents:
+- MTS_IMPORT_TYPES → MI_IMPORT_TYPES (15 occurrences)
+- MTS_IMPORT_RENDER_BASIC_TYPES → MI_IMPORT_RENDER_BASIC_TYPES (2)
+- MTS_IMPORT_BASE → MI_IMPORT_BASE (1)
+- MTS_INLINE → MI_INLINE (7)
+- MTS_MASKED_FUNCTION → MI_MASKED_FUNCTION (1)
+- MTS_DECLARE_CLASS → MI_DECLARE_CLASS (1)
+- MTS_IMPLEMENT_CLASS_VARIANT → MI_IMPLEMENT_CLASS_VARIANT (1)
+- MTS_EXPORT_PLUGIN → MI_EXPORT_PLUGIN (1)
+
+Total: 26 macro updates across 6 files
+Fixes "MTS_IMPORT_TYPES: missing return type" build errors
+```
+
 **Files committed:**
 - `MITSUBA3_PORTING_GUIDE_CORRECTED.md` - Corrected documentation
-- `MITSUBA3_PORTING_COMPLETE.md` - Complete porting summary
-- `mitsuba/src/integrators/MPG/ann.h` - Enoki and TBB includes removed
-- `mitsuba/src/integrators/MPG/util.h` - Enoki and TBB includes removed
+- `MITSUBA3_PORTING_COMPLETE.md` - Complete porting summary (this file)
+- `mitsuba/src/integrators/MPG/ann.h` - Includes removed
+- `mitsuba/src/integrators/MPG/util.h` - Includes removed
+- `mitsuba/src/integrators/MPG/chain_distribution.h` - API macros updated
+- `mitsuba/src/integrators/MPG/dtree.h` - API macros updated
+- `mitsuba/src/integrators/MPG/manifold_path_guiding.cpp` - API macros updated
+- `mitsuba/src/integrators/MPG/manifold_path_guiding.h` - API macros updated
+- `mitsuba/src/integrators/MPG/spatial_structure.h` - API macros updated
 - `mitsuba/src/integrators/MPG_mitsuba2_backup/` - Original code backup
-- `port_to_mitsuba3_corrected.bat` - Corrected Windows automation script
-- `port_to_mitsuba3_corrected.sh` - Corrected Linux automation script
+- `port_to_mitsuba3_corrected.bat` - Corrected Windows automation script (removes Enoki/TBB)
+- `port_to_mitsuba3_corrected.sh` - Corrected Linux automation script (removes Enoki/TBB)
+- `update_mitsuba3_api.sh` - API macro update automation script
 
 **Pushed to remote:** ✅
 
