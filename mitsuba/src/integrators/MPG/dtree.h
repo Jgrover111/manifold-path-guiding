@@ -11,7 +11,7 @@ enum class EDirectionalFilter {
 
 template <typename Float, typename Spectrum> class QuadTreeNode {
 public:
-    MTS_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
+    MI_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
     QuadTreeNode() {
         m_children = {};
         for (size_t i = 0; i < m_sum.size(); ++i) {
@@ -205,7 +205,7 @@ private:
 
 template <typename Float, typename Spectrum> class DTree {
 public:
-    MTS_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
+    MI_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
     using QuadTreeNode = QuadTreeNode<Float, Spectrum>;
 
     DTree() {
@@ -369,7 +369,7 @@ private:
 };
 
 template <typename Float, typename Spectrum> struct DTreeRecord {
-    MTS_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
+    MI_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
     using QuadTreeNode = QuadTreeNode<Float, Spectrum>;
     using DTree        = DTree<Float, Spectrum>;
 
@@ -383,7 +383,7 @@ template <typename Float, typename Spectrum> struct DTreeRecord {
 
 template <typename Float, typename Spectrum> struct DTreeWrapper {
 public:
-    MTS_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
+    MI_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
     using QuadTreeNode = QuadTreeNode<Float, Spectrum>;
     using DTree        = DTree<Float, Spectrum>;
     using DTreeRecord  = DTreeRecord<Float, Spectrum>;

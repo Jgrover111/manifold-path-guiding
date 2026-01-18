@@ -111,7 +111,7 @@ private:
 };
 
 template <typename Float, typename Spectrum> struct SubpathSample {
-    MTS_IMPORT_TYPES();
+    MI_IMPORT_TYPES();
     Point3f xD    = 0;
     Point3f xL    = 0;
     Point3f x1    = 0;

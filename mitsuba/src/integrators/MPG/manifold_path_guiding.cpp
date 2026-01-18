@@ -28,7 +28,7 @@ static inline ThreadLocal<std::vector<SubpathSample<Float, Spectrum>>> recorded_
 // ===============================
 template <typename Float, typename Spectrum> class GuidedManifoldSampler {
 public:
-    MTS_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
+    MI_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
     using BSDFPtr            = typename RenderAliases::BSDFPtr;
     using ShapePtr           = typename RenderAliases::ShapePtr;
     using ManifoldVertex     = ManifoldVertex<Float, Spectrum>;
@@ -555,8 +555,8 @@ public:
 template <typename Float, typename Spectrum>
 class ManifoldPathGuidingIntegrator : public MonteCarloIntegrator<Float, Spectrum> {
 public:
-    MTS_IMPORT_BASE(MonteCarloIntegrator, m_max_depth, m_rr_depth);
-    MTS_IMPORT_TYPES(Scene, Sampler, Sensor, Emitter, EmitterPtr, BSDF, BSDFPtr, ShapePtr, Medium);
+    MI_IMPORT_BASE(MonteCarloIntegrator, m_max_depth, m_rr_depth);
+    MI_IMPORT_TYPES(Scene, Sampler, Sensor, Emitter, EmitterPtr, BSDF, BSDFPtr, ShapePtr, Medium);
     using SubpathSample         = SubpathSample<Float, Spectrum>;
     using GuidedManifoldSampler = GuidedManifoldSampler<Float, Spectrum>;
 
@@ -788,7 +788,7 @@ public:
 
     std::pair<Spectrum, Mask> sample(const Scene *scene, Sampler *sampler, const RayDifferential3f &ray_,
                                      const Medium * /* medium */, Float * /* aovs */, Mask active) const override {
-        MTS_MASKED_FUNCTION(ProfilerPhase::SamplingIntegratorSample, active);
+        MI_MASKED_FUNCTION(ProfilerPhase::SamplingIntegratorSample, active);
 
         GuidedManifoldSampler &mf = (GuidedManifoldSampler &) thread_mf;
         if constexpr (is_array_v<Float>) {
@@ -933,7 +933,7 @@ public:
                   << std::endl;
     }
 
-    MTS_DECLARE_CLASS()
+    MI_DECLARE_CLASS()
 
 public:
     ManifoldPathGuidingConfig m_sms_config;
@@ -950,6 +950,6 @@ public:
     static inline std::atomic<unsigned long long> perf_manifold_query    = 0; // nano sec
 };
 
-MTS_IMPLEMENT_CLASS_VARIANT(ManifoldPathGuidingIntegrator, MonteCarloIntegrator)
-MTS_EXPORT_PLUGIN(ManifoldPathGuidingIntegrator, "manifold path guiding integrator");
+MI_IMPLEMENT_CLASS_VARIANT(ManifoldPathGuidingIntegrator, MonteCarloIntegrator)
+MI_EXPORT_PLUGIN(ManifoldPathGuidingIntegrator, "manifold path guiding integrator");
 NAMESPACE_END(mitsuba)

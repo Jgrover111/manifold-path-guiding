@@ -12,7 +12,7 @@ NAMESPACE_BEGIN(mitsuba)
 /////////////////////////////
 
 template <typename Float, typename Spectrum> struct SpatialStructure {
-    MTS_IMPORT_TYPES();
+    MI_IMPORT_TYPES();
     using SubpathSample     = SubpathSample<Float, Spectrum>;
     using ChainDistribution = ChainDistribution<Float, Spectrum>;
     using AABB              = BoundingBox<Point3>;
@@ -30,7 +30,7 @@ int g_iter = 0;
 
 // ANN library
 template <typename Float, typename Spectrum> struct SpatialStructureANN : public SpatialStructure<Float, Spectrum> {
-    MTS_IMPORT_TYPES();
+    MI_IMPORT_TYPES();
     using SpatialStructure = SpatialStructure<Float, Spectrum>;
 
 public:
@@ -125,7 +125,7 @@ public:
 
 // STree
 template <typename Float, typename Spectrum> struct MySTreeNode {
-    MTS_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
+    MI_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
 
     using SubpathSample     = SubpathSample<Float, Spectrum>;
     using ChainDistribution = ChainDistribution<Float, Spectrum>;
@@ -250,7 +250,7 @@ template <typename Float, typename Spectrum> struct MySTreeNode {
 
 template <typename Float, typename Spectrum> class SpatialStructureSTree : public SpatialStructure<Float, Spectrum> {
 public:
-    MTS_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
+    MI_IMPORT_TYPES(BSDF, Sampler, Scene, Shape);
     using MySTreeNode = MySTreeNode<Float, Spectrum>;
 
     SpatialStructureSTree(AABB aabb) {

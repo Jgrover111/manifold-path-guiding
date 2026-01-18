@@ -9,7 +9,7 @@ template <typename Float, typename Spectrum>
 std::shared_ptr<ChainDistribution<Float, Spectrum>> chainDistributionFactory();
 
 template <typename Float, typename Spectrum> struct ChainDistributionSamplingContext {
-    MTS_IMPORT_TYPES();
+    MI_IMPORT_TYPES();
 
     // for bounce
     DiscreteDistribution<Float> bounce_distribution;
@@ -32,7 +32,7 @@ template <typename Float, typename Spectrum> struct ChainDistributionSamplingCon
 
 template <typename Float, typename Spectrum> class ChainDistribution {
 public:
-    MTS_IMPORT_TYPES();
+    MI_IMPORT_TYPES();
     using SubpathSample                    = SubpathSample<Float, Spectrum>;
     using Sampler                          = Sampler<Float, Spectrum>;
     using DTreeWrapper                     = DTreeWrapper<Float, Spectrum>;

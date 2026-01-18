@@ -73,7 +73,7 @@ struct ManifoldPathGuidingConfig {
 template <typename Float_, typename Spectrum_> struct ManifoldVertex {
     using Float    = Float_;
     using Spectrum = Spectrum_;
-    MTS_IMPORT_RENDER_BASIC_TYPES()
+    MI_IMPORT_RENDER_BASIC_TYPES()
     using ShapePtr             = typename RenderAliases::ShapePtr;
     using SurfaceInteraction3f = typename RenderAliases::SurfaceInteraction3f;
 
@@ -169,7 +169,7 @@ template <typename Float_, typename Spectrum_> struct ManifoldVertex {
 template <typename Float_, typename Spectrum_> struct EmitterInteraction {
     using Float    = Float_;
     using Spectrum = Spectrum_;
-    MTS_IMPORT_RENDER_BASIC_TYPES()
+    MI_IMPORT_RENDER_BASIC_TYPES()
     using EmitterPtr = typename RenderAliases::EmitterPtr;
 
     Point3f p; // Emitter position (for area / point)
@@ -213,7 +213,7 @@ template <typename Float_, typename Spectrum_> struct EmitterInteraction {
 template <typename Float_, typename Spectrum_> struct SpecularManifold {
     using Float    = Float_;
     using Spectrum = Spectrum_;
-    MTS_IMPORT_TYPES(Scene, Sampler, Sensor, Emitter, EmitterPtr, BSDF, BSDFPtr, ShapePtr, Medium);
+    MI_IMPORT_TYPES(Scene, Sampler, Sensor, Emitter, EmitterPtr, BSDF, BSDFPtr, ShapePtr, Medium);
     using EmitterPtr         = typename RenderAliases::EmitterPtr;
     using ShapePtr           = typename RenderAliases::ShapePtr;
     using ManifoldVertex     = ManifoldVertex<Float, Spectrum>;
@@ -347,7 +347,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
 
     /// Sample the bivariate normal distribution for given mean vector and
     /// covariance matrix
-    static MTS_INLINE Point2f sample_gaussian(const Point2f &mu, const Matrix2f &sigma, const Point2f &sample) {
+    static MI_INLINE Point2f sample_gaussian(const Point2f &mu, const Matrix2f &sigma, const Point2f &sample) {
         // Based on
         // https://math.stackexchange.com/questions/268298/sampling-from-a-2d-normal-with-a-given-covariance-matrix
         Point2f p     = warp::square_to_std_normal(sample);
@@ -364,11 +364,11 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
         return p + mu;
     }
 
-    static MTS_INLINE std::pair<Mask, Vector3f> reflect(const Vector3f &w, const Normal3f &n) {
+    static MI_INLINE std::pair<Mask, Vector3f> reflect(const Vector3f &w, const Normal3f &n) {
         return std::make_pair(true, 2.f * dot(w, n) * n - w);
     }
 
-    static MTS_INLINE std::pair<Vector3f, Vector3f> d_reflect(const Vector3f &w, const Vector3f &dw_du,
+    static MI_INLINE std::pair<Vector3f, Vector3f> d_reflect(const Vector3f &w, const Vector3f &dw_du,
                                                               const Vector3f &dw_dv, const Normal3f &n,
                                                               const Vector3f &dn_du, const Vector3f &dn_dv) {
         Float dot_w_n = dot(w, n), dot_dwdu_n = dot(dw_du, n), dot_dwdv_n = dot(dw_dv, n), dot_w_dndu = dot(w, dn_du),
@@ -378,7 +378,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
         return std::make_pair(dwr_du, dwr_dv);
     }
 
-    static MTS_INLINE std::pair<Mask, Vector3f> refract(const Vector3f &w, const Normal3f &n_, Float eta_) {
+    static MI_INLINE std::pair<Mask, Vector3f> refract(const Vector3f &w, const Normal3f &n_, Float eta_) {
         Normal3f n = n_;
         Float eta  = rcp(eta_);
         if (dot(w, n) < 0) {
@@ -395,7 +395,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
         return std::make_pair(true, wt);
     }
 
-    static MTS_INLINE std::pair<Vector3f, Vector3f> d_refract(const Vector3f &w, const Vector3f &dw_du,
+    static MI_INLINE std::pair<Vector3f, Vector3f> d_refract(const Vector3f &w, const Vector3f &dw_du,
                                                               const Vector3f &dw_dv, const Normal3f &n_,
                                                               const Vector3f &dn_du_, const Vector3f &dn_dv_,
                                                               Float eta_) {
@@ -424,7 +424,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
         return std::make_pair(dwt_du, dwt_dv);
     }
 
-    static MTS_INLINE std::pair<Float, Float> sphcoords(const Vector3f &w) {
+    static MI_INLINE std::pair<Float, Float> sphcoords(const Vector3f &w) {
         Float theta = safe_acos(w[2]);
         Float phi   = atan2(w[1], w[0]);
         if (phi < 0.f) {
@@ -433,7 +433,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
         return std::make_pair(theta, phi);
     }
 
-    static MTS_INLINE std::tuple<Float, Float, Float, Float> d_sphcoords(const Vector3f &w, const Vector3f &dw_du,
+    static MI_INLINE std::tuple<Float, Float, Float, Float> d_sphcoords(const Vector3f &w, const Vector3f &dw_du,
                                                                          const Vector3f &dw_dv) {
         Float d_acos     = -rcp(safe_sqrt(1.f - w[2] * w[2]));
         Vector2f d_theta = d_acos * Vector2f(dw_du[2], dw_dv[2]);
@@ -813,7 +813,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
 };
 
 template <typename Float, typename Spectrum> struct Manifold_Walk {
-    MTS_IMPORT_TYPES(Sampler, Scene, Emitter)
+    MI_IMPORT_TYPES(Sampler, Scene, Emitter)
     using EmitterPtr         = typename RenderAliases::EmitterPtr;
     using ShapePtr           = typename RenderAliases::ShapePtr;
     using ManifoldVertex     = ManifoldVertex<Float, Spectrum>;
