@@ -199,7 +199,9 @@ public:
     }
 
 private:
-    std::array<std::atomic<Float>, 4> m_sum;
+    // Note: Using float instead of Float template parameter because std::atomic
+    // doesn't work with Dr.Jit types. MPG only supports scalar mode anyway.
+    std::array<std::atomic<float>, 4> m_sum;
     std::array<uint16_t, 4> m_children;
 };
 
@@ -360,8 +362,10 @@ private:
             return *this;
         }
 
-        std::atomic<Float> sum;
-        std::atomic<Float> statisticalWeight;
+        // Note: Using float instead of Float template parameter because std::atomic
+        // doesn't work with Dr.Jit types. MPG only supports scalar mode anyway.
+        std::atomic<float> sum;
+        std::atomic<float> statisticalWeight;
 
     } m_atomic;
 

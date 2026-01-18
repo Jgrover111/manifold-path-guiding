@@ -81,7 +81,9 @@ int get_chaintype_bit(int tau, int i) { return (tau >> (i)) & 1; }
 #define Vector3 Vector<Float, 3>
 #define Vector6f Vector<Float, 6>
 
-template <typename Float> static void add_to_atomic_float(std::atomic<Float> &var, Float val) {
+// Note: Using float instead of Float template parameter because std::atomic
+// doesn't work with Dr.Jit types. MPG only supports scalar mode anyway.
+template <typename Float> static void add_to_atomic_float(std::atomic<float> &var, Float val) {
     auto current = var.load();
     while (!var.compare_exchange_weak(current, current + val))
         ;

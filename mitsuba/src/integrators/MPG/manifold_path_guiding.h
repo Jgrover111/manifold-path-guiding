@@ -113,7 +113,7 @@ template <typename Float_, typename Spectrum_> struct ManifoldVertex {
         // Encode conductors with eta=1.0, and dielectrics with their relative
         // IOR
         Complex<Spectrum> ior = si.bsdf()->ior(si);
-        eta                   = select(all(eq(0.f, imag(ior))), hmean(real(ior)),
+        eta                   = dr::select(dr::all(dr::eq(0.f, imag(ior))), dr::mean(real(ior)),
                                        1.f); // Assumption here is that real (dielectric) IOR is
                                              // not spectrally varying.
 
@@ -138,13 +138,13 @@ template <typename Float_, typename Spectrum_> struct ManifoldVertex {
 
     void make_orthonormal() {
         // Turn into orthonormal parameterization at 'p'
-        Float inv_norm = rcp(norm(dp_du));
+        Float inv_norm = dr::rcp(norm(dp_du));
         dp_du *= inv_norm;
         dn_du *= inv_norm;
         Float dp           = dot(dp_du, dp_dv);
         Vector3f dp_dv_tmp = dp_dv - dp * dp_du;
         Vector3f dn_dv_tmp = dn_dv - dp * dn_du;
-        inv_norm           = rcp(norm(dp_dv_tmp));
+        inv_norm           = dr::rcp(norm(dp_dv_tmp));
         dp_dv              = dp_dv_tmp * inv_norm;
         dn_dv              = dn_dv_tmp * inv_norm;
     }
@@ -235,7 +235,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
         // Scene::sample_emitter_direction
         Float emitter_sample = sampler->next_1d();
         Float emitter_pdf    = 1.f / emitters.size();
-        UInt32 index = min(UInt32(emitter_sample * (ScalarFloat) emitters.size()), (uint32_t) emitters.size() - 1);
+        UInt32 index = dr::minimum(UInt32(emitter_sample * (ScalarFloat) emitters.size()), (uint32_t) emitters.size() - 1);
         const EmitterPtr emitter = gather<EmitterPtr>(emitters.data(), index);
         ei.emitter               = emitter;
 
@@ -276,7 +276,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
         }
 
         ei.pdf *= emitter_pdf;
-        ei.weight = spec * rcp(emitter_pdf);
+        ei.weight = spec * dr::rcp(emitter_pdf);
 
         return ei;
     }
@@ -380,10 +380,10 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
 
     static MI_INLINE std::pair<Mask, Vector3f> refract(const Vector3f &w, const Normal3f &n_, Float eta_) {
         Normal3f n = n_;
-        Float eta  = rcp(eta_);
+        Float eta  = dr::rcp(eta_);
         if (dot(w, n) < 0) {
             // Coming from the "inside"
-            eta = rcp(eta);
+            eta = dr::rcp(eta);
             n *= -1.f;
         }
         Float dot_w_n   = dot(w, n);
@@ -401,10 +401,10 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
                                                               Float eta_) {
         Normal3f n     = n_;
         Vector3f dn_du = dn_du_, dn_dv = dn_dv_;
-        Float eta = rcp(eta_);
+        Float eta = dr::rcp(eta_);
         if (dot(w, n) < 0) {
             // Coming from the "inside"
-            eta = rcp(eta);
+            eta = dr::rcp(eta);
             n *= -1.f;
             dn_du *= -1.f;
             dn_dv *= -1.f;
@@ -414,10 +414,10 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
         Float root       = sqrt(1.f - eta * eta * (1.f - dot_w_n * dot_w_n));
 
         Vector3f a_u = -eta * (dw_du - ((dot_dwdu_n + dot_w_dndu) * n + dot_w_n * dn_du)), b1_u = dn_du * root,
-                 b2_u = n * rcp(2.f * root) * (-eta * eta * (-2.f * dot_w_n * (dot_dwdu_n + dot_w_dndu))),
+                 b2_u = n * dr::rcp(2.f * root) * (-eta * eta * (-2.f * dot_w_n * (dot_dwdu_n + dot_w_dndu))),
                  b_u = -(b1_u + b2_u), a_v = -eta * (dw_dv - ((dot_dwdv_n + dot_w_dndv) * n + dot_w_n * dn_dv)),
                  b1_v = dn_dv * root,
-                 b2_v = n * rcp(2.f * root) * (-eta * eta * (-2.f * dot_w_n * (dot_dwdv_n + dot_w_dndv))),
+                 b2_v = n * dr::rcp(2.f * root) * (-eta * eta * (-2.f * dot_w_n * (dot_dwdv_n + dot_w_dndv))),
                  b_v  = -(b1_v + b2_v);
 
         Vector3f dwt_du = a_u + b_u, dwt_dv = a_v + b_v;
@@ -435,13 +435,13 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
 
     static MI_INLINE std::tuple<Float, Float, Float, Float> d_sphcoords(const Vector3f &w, const Vector3f &dw_du,
                                                                          const Vector3f &dw_dv) {
-        Float d_acos     = -rcp(safe_sqrt(1.f - w[2] * w[2]));
+        Float d_acos     = -dr::rcp(safe_sqrt(1.f - w[2] * w[2]));
         Vector2f d_theta = d_acos * Vector2f(dw_du[2], dw_dv[2]);
 
         Float yx     = w[1] / w[0];
-        Float d_atan = rcp(1 + yx * yx);
+        Float d_atan = dr::rcp(1 + yx * yx);
         Vector2f d_phi =
-            d_atan * Vector2f(w[0] * dw_du[1] - w[1] * dw_du[0], w[0] * dw_dv[1] - w[1] * dw_dv[0]) * rcp(w[0] * w[0]);
+            d_atan * Vector2f(w[0] * dw_du[1] - w[1] * dw_du[0], w[0] * dw_dv[1] - w[1] * dw_dv[0]) * dr::rcp(w[0] * w[0]);
         if (w[0] == 0.f) {
             d_phi = 0.f;
         }
@@ -508,12 +508,12 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
                     h_l = normalize(si.wi + wo_l);
                     f *= 4.f * abs_dot(wo_l, h_l);
                 } else {
-                    Float eta = hmean(real(ior));
+                    Float eta = dr::mean(real(ior));
                     if (Frame3f::cos_theta(si.wi) < 0.f) {
-                        eta = rcp(eta);
+                        eta = dr::rcp(eta);
                     }
                     h_l = -normalize(si.wi + eta * wo_l);
-                    f *= sqr(dot(si.wi, h_l) + eta * dot(wo_l, h_l)) / (eta * eta * abs_dot(wo_l, h_l));
+                    f *= dr::square(dot(si.wi, h_l) + eta * dot(wo_l, h_l)) / (eta * eta * abs_dot(wo_l, h_l));
                 }
 
                 bsdf_val *= f;
@@ -523,20 +523,20 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
                 Frame3f frame   = bsdf->frame(si, 0.f);
                 Float cos_theta = dot(frame.n, wo);
                 if (reflection) {
-                    if (all(eq(imag(ior), 0.f))) {
+                    if (dr::all(dr::eq(imag(ior), 0.f))) {
                         auto [F_, cos_theta_t, eta_it, eta_ti] = fresnel(Spectrum(abs(cos_theta)), real(ior));
                         f                                      = F_;
                     } else {
                         f = fresnel_conductor(Spectrum(abs(cos_theta)), ior);
                     }
                 } else {
-                    Float eta = hmean(real(ior));
+                    Float eta = dr::mean(real(ior));
                     if (cos_theta < 0.f) {
-                        eta = rcp(eta);
+                        eta = dr::rcp(eta);
                     }
                     auto [F, unused_0, unused_1, unused_2] = fresnel(cos_theta, eta);
                     f                                      = 1.f - F;
-                    f *= sqr(eta);
+                    f *= dr::square(eta);
                 }
 
                 bsdf_val *= f;
@@ -602,7 +602,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
             if (ilo < 1e-3f) {
                 return false;
             }
-            ilo = rcp(ilo);
+            ilo = dr::rcp(ilo);
             wo *= ilo;
 
             if (v[i].fixed_direction) {
@@ -630,7 +630,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
             if (ili < 1e-3f) {
                 return false;
             }
-            ili = rcp(ili);
+            ili = dr::rcp(ili);
             wi *= ili;
 
             // Setup generalized half-vector
@@ -640,12 +640,12 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
             }
 
             if (dot(wi, v[i].gn) < 0.f) {
-                eta = rcp(eta);
+                eta = dr::rcp(eta);
             }
             Vector3f h = wi + eta * wo;
             if (eta != 1.f)
                 h *= -1.f;
-            Float ilh = rcp(norm(h));
+            Float ilh = dr::rcp(norm(h));
             h *= ilh;
 
             ilo *= eta * ilh;
@@ -712,9 +712,9 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
             Float dx1_dxend = invert_tridiagonal_geo(v);
             /* Unfortunately, these geometric terms can be unstable, so to avoid
             severe variance we can clamp here. */
-            dx1_dxend    = min(dx1_dxend, Float(10.f));
+            dx1_dxend    = dr::minimum(dx1_dxend, Float(10.f));
             Vector3f d   = vx.p - v[0].p;
-            Float inv_r2 = rcp(squared_norm(d));
+            Float inv_r2 = dr::rcp(squared_norm(d));
             d *= sqrt(inv_r2);
             Float dw0_dx1 = abs_dot(d, v[0].gn) * inv_r2;
             Float G       = dw0_dx1 * dx1_dxend;
@@ -787,7 +787,7 @@ template <typename Float_, typename Spectrum_> struct SpecularManifold {
             ei_.weight = spec * ds.dist * ds.dist;
 
             ei_.pdf *= emitter_pdf;
-            ei_.weight *= rcp(emitter_pdf);
+            ei_.weight *= dr::rcp(emitter_pdf);
         }
         auto [sucess_e, vy] =
             SpecularManifold::emitter_interaction_to_vertex(scene, ei_, vtx_last.p, si.time, si.wavelengths);
@@ -942,7 +942,7 @@ template <typename Float, typename Spectrum> struct Manifold_Walk {
             if (ilo < 1e-3f) {
                 return false;
             }
-            ilo = rcp(ilo);
+            ilo = dr::rcp(ilo);
             wo *= ilo;
 
             Vector3f wi = x_prev - x_cur;
@@ -950,18 +950,18 @@ template <typename Float, typename Spectrum> struct Manifold_Walk {
             if (ili < 1e-3f) {
                 return false;
             }
-            ili = rcp(ili);
+            ili = dr::rcp(ili);
             wi *= ili;
 
             // Setup generalized half-vector
             Float eta = v[i].eta;
             if (dot(wi, v[i].gn) < 0.f) {
-                eta = rcp(eta);
+                eta = dr::rcp(eta);
             }
             Vector3f h = wi + eta * wo;
             if (eta != 1.f)
                 h *= -1.f;
-            Float ilh = rcp(norm(h));
+            Float ilh = dr::rcp(norm(h));
             h *= ilh;
 
             ilo *= eta * ilh;
@@ -1077,7 +1077,7 @@ template <typename Float, typename Spectrum> struct Manifold_Walk {
             if (ilo < 1e-3f) {
                 return false;
             }
-            ilo = rcp(ilo);
+            ilo = dr::rcp(ilo);
             wo *= ilo;
 
             Vector3f dwo_du_cur, dwo_dv_cur;
@@ -1096,7 +1096,7 @@ template <typename Float, typename Spectrum> struct Manifold_Walk {
             if (ili < 1e-3f) {
                 return false;
             }
-            ili = rcp(ili);
+            ili = dr::rcp(ili);
             wi *= ili;
 
             Vector3f dwi_du_cur = -ili * (v[i].dp_du - wi * dot(wi, v[i].dp_du)),

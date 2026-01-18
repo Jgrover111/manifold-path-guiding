@@ -380,7 +380,7 @@ public:
                 auto tmp_right_bound = tmp_offset + tmp_size + tmp_size * global_sms_config.spatial_filter * 2;
                 for (auto &sample : children_samples[i]) {
                     auto p = point3f_to_6f(sample.xD, sample.xL);
-                    if (all(tmp_left_bound <= p && tmp_right_bound >= p)) {
+                    if (dr::all(tmp_left_bound <= p && tmp_right_bound >= p)) {
                         tmp_samples.push_back(sample);
                     }
                 }

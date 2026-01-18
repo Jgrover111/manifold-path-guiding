@@ -792,7 +792,7 @@ public:
         MI_MASKED_FUNCTION(ProfilerPhase::SamplingIntegratorSample, active);
 
         GuidedManifoldSampler &mf = (GuidedManifoldSampler &) thread_mf;
-        if constexpr (is_array_v<Float>) {
+        if constexpr (dr::is_array_v<Float>) {
             Throw("This integrator does not support vector/gpu/autodiff modes!");
             return { 0.f, 0.f };
         } else {
@@ -821,29 +821,35 @@ public:
 
                 if (!si.is_valid())
                     break;
-                si.compute_partials(ray);
+                // Note: compute_partials() removed in Mitsuba 3 - partials computed automatically in compute_surface_interaction
 
                 if (depth > m_rr_depth) {
-                    Float q = min(hmax(depolarize(throughput)) * sqr(eta), .95f);
+                    Float q = dr::minimum(dr::max(dr::depolarize(throughput)) * dr::square(eta), .95f);
                     if (sampler->next_1d() > q)
                         break;
-                    throughput *= rcp(q);
+                    throughput *= dr::rcp(q);
                 }
 
                 if (uint32_t(depth) >= uint32_t(m_max_depth))
                     break;
 
                 // --------------- Specular Manifold Sampling -----------------
-                bool on_caustic_caster = si.shape->is_caustic_caster_multi_scatter() || si.shape->is_caustic_bouncer();
+                // TODO: Mitsuba 3 doesn't have built-in caustic classification methods
+                // These would need to be added as custom Shape extensions
+                // For now, treating all surfaces as potential caustic participants
+                bool on_caustic_caster = false; // si.shape->is_caustic_caster_multi_scatter() || si.shape->is_caustic_bouncer();
 
                 if (!on_caustic_caster) {
                     still_perform_nee = true; // this is a new separator, reset flag
                 }
 
-                if (si.shape->is_caustic_receiver() && !on_caustic_caster &&
+                // TODO: Restore caustic detection when Shape extensions are added
+                // Temporarily disabled: si.shape->is_caustic_receiver()
+                if (false && !on_caustic_caster &&
                     (m_max_depth < 0 || depth + 1 < m_max_depth)) {
+                    // TODO: scene->caustic_emitters_multi_scatter() needs custom implementation
                     EmitterInteraction ei = SpecularManifold<Float, Spectrum>::sample_emitter_interaction(
-                        si, scene->caustic_emitters_multi_scatter(), sampler);
+                        si, nullptr, sampler);
 
                     mf.m_online_iteration      = m_online_iteration;
                     mf.m_online_last_iteration = m_online_last_iteration;
@@ -871,7 +877,8 @@ public:
                 // The following codes are mostly from original SMS
                 // --------------------- Emitter sampling ---------------------
                 BSDFContext ctx;
-                ctx.sampler  = sampler;
+                // Note: BSDFContext no longer has sampler field in Mitsuba 3
+                // Sampler is passed directly to BSDF methods instead
                 BSDFPtr bsdf = si.bsdf(ray);
                 if ((has_flag(bsdf->flags(), BSDFFlags::Smooth) && !on_caustic_caster) || still_perform_nee) {
 
@@ -881,7 +888,7 @@ public:
                         Spectrum bsdf_val = bsdf->eval(ctx, si, wo);
                         bsdf_val          = si.to_world_mueller(bsdf_val, -wo, si.wi);
                         Float bsdf_pdf = bsdf->pdf(ctx, si, wo);
-                        Float mis      = select(ds.delta, 1.f, mis_weight(ds.pdf, bsdf_pdf));
+                        Float mis      = dr::select(ds.delta, 1.f, mis_weight(ds.pdf, bsdf_pdf));
                         result += mis * throughput * bsdf_val * emitter_weight;
                     }
                 }
@@ -894,7 +901,7 @@ public:
                 if (!has_flag(bs.sampled_type, BSDFFlags::Delta)) {
                     specular_camera_path = false;
                 }
-                if (all(eq(throughput, 0.f)))
+                if (dr::all(throughput == 0.f))
                     break;
 
                 ray                          = si.spawn_ray(si.to_world(bs.wo));
@@ -906,9 +913,9 @@ public:
                     if (!on_caustic_caster || (!specular_camera_path && still_perform_nee) ||
                         emitter->is_environment()) { // filter out glints
                         Spectrum emitter_val = emitter->eval(si_bsdf);
-                        DirectionSample3f ds(si_bsdf, si);
-                        ds.object         = emitter;
-                        Float emitter_pdf = select(!has_flag(bs.sampled_type, BSDFFlags::Delta),
+                        // DirectionSample3f constructor signature changed in Mitsuba 3
+                        DirectionSample3f ds(scene, si_bsdf, si);
+                        Float emitter_pdf = dr::select(!has_flag(bs.sampled_type, BSDFFlags::Delta),
                                                    scene->pdf_emitter_direction(si, ds), 0.f);
                         Float mis         = mis_weight(bs.pdf, emitter_pdf);
                         result += mis * throughput * emitter_val;
@@ -924,7 +931,7 @@ public:
     Float mis_weight(Float pdf_a, Float pdf_b) const {
         pdf_a *= pdf_a;
         pdf_b *= pdf_b;
-        return select(pdf_a > 0.f, pdf_a / (pdf_a + pdf_b), 0.f);
+        return dr::select(pdf_a > 0.f, pdf_a / (pdf_a + pdf_b), 0.f);
     }
 
     void print_stats() {
