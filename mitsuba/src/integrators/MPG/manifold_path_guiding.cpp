@@ -943,7 +943,7 @@ public:
     std::shared_ptr<SpatialStructure> spatial_structure;
     std::shared_ptr<SpatialStructure> spatial_structure_ext;
     mutable std::vector<SubpathSample> global_new_data;
-    static inline ThreadLocal<GuidedManifoldSampler> thread_mf;
+    static inline thread_local GuidedManifoldSampler thread_mf;
     int m_online_iteration       = 0;
     bool m_online_last_iteration = 0;
 
