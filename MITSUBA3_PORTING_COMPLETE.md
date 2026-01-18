@@ -18,17 +18,28 @@ The MPG (Manifold Path Guiding) integrator has been successfully ported from Mit
 - Found that the Enoki includes in MPG code were **unused**
 - Solution: Simply remove the 4 unused include lines
 
+**Second Build Error (TBB):**
+- After removing Enoki includes, build failed with: `Cannot open include file: 'tbb/blocked_range.h'`
+- Analysis showed TBB headers were also **unused** - MPG uses OpenMP instead
+- Solution: Remove the 4 unused TBB include lines
+
 ### 2. Files Modified ✅
 
 **mitsuba/src/integrators/MPG/ann.h**
 - Removed: `#include <enoki/morton.h>`
 - Removed: `#include <enoki/stl.h>`
+- Removed: `#include <tbb/blocked_range.h>`
+- Removed: `#include <tbb/parallel_for.h>`
 
 **mitsuba/src/integrators/MPG/util.h**
 - Removed: `#include <enoki/morton.h>`
 - Removed: `#include <enoki/stl.h>`
+- Removed: `#include <tbb/blocked_range.h>`
+- Removed: `#include <tbb/parallel_for.h>`
 
-**Total changes: 4 lines removed** - That's it!
+**Total changes: 8 lines removed** - That's it!
+
+**Note:** The MPG integrator uses **OpenMP** for parallelism (`#pragma omp parallel for` in spatial_structure.h), not TBB.
 
 ### 3. Mitsuba 3 Setup ✅
 
@@ -54,7 +65,7 @@ cp -r /home/user/manifold-path-guiding/mitsuba/src/integrators/MPG /home/user/mi
 
 **Branch:** `claude/cmake-vs2022-config-2rBv4`
 
-**Commit:** `6468e1b`
+**Commit 1:** `6468e1b` - Remove unused Enoki includes
 ```
 Port MPG integrator to Mitsuba 3 by removing unused Enoki includes
 
@@ -64,10 +75,22 @@ Port MPG integrator to Mitsuba 3 by removing unused Enoki includes
 - MPG code is now ready to be integrated with Mitsuba 3
 ```
 
+**Commit 2:** `b699884` - Remove unused TBB includes
+```
+Remove unused TBB includes from MPG integrator
+
+- Remove #include <tbb/blocked_range.h> and #include <tbb/parallel_for.h>
+- These includes were not actually used in the MPG code
+- MPG uses OpenMP (#pragma omp parallel for) for parallelism, not TBB
+- Fixes "Cannot open include file: 'tbb/blocked_range.h'" build error
+```
+
 **Files committed:**
 - `MITSUBA3_PORTING_GUIDE_CORRECTED.md` - Corrected documentation
-- `mitsuba/src/integrators/MPG/ann.h` - Enoki includes removed
-- `mitsuba/src/integrators/MPG/util.h` - Enoki includes removed
+- `MITSUBA3_PORTING_COMPLETE.md` - Complete porting summary
+- `mitsuba/src/integrators/MPG/ann.h` - Enoki and TBB includes removed
+- `mitsuba/src/integrators/MPG/util.h` - Enoki and TBB includes removed
+- `mitsuba/src/integrators/MPG_mitsuba2_backup/` - Original code backup
 - `port_to_mitsuba3_corrected.bat` - Corrected Windows automation script
 - `port_to_mitsuba3_corrected.sh` - Corrected Linux automation script
 
